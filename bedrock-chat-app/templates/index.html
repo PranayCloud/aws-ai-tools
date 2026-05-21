@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Nova Lite AI</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&family=Orbitron:wght@700&display=swap" rel="stylesheet"/>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background: #0a0a0f;
+      color: #e0e0e0;
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    header {
+      text-align: center;
+      padding: 18px;
+      background: linear-gradient(90deg, #0d0d1a, #1a0a2e, #0d0d1a);
+      border-bottom: 1px solid #2a1a4a;
+      position: relative;
+    }
+
+    header h1 {
+      font-family: 'Orbitron', sans-serif;
+      font-size: 1.6rem;
+      background: linear-gradient(90deg, #a855f7, #38bdf8, #a855f7);
+      background-size: 200%;
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+      color: transparent;
+      animation: shimmer 3s infinite linear;
+    }
+
+    header p {
+      font-size: 0.78rem;
+      color: #6b7280;
+      margin-top: 4px;
+      letter-spacing: 0.05em;
+    }
+
+    @keyframes shimmer {
+      0% { background-position: 0% }
+      100% { background-position: 200% }
+    }
+
+    .container {
+      display: flex;
+      flex: 1;
+      overflow: hidden;
+    }
+
+    /* ── LEFT PANEL ── */
+    .panel {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      padding: 24px;
+      gap: 14px;
+      overflow: hidden;
+    }
+
+    .panel-left {
+      background: #0f0f1a;
+      border-right: 1px solid #1e1e3a;
+    }
+
+    .panel-right {
+      background: #0a0a14;
+    }
+
+    .panel-label {
+      font-size: 0.7rem;
+      font-weight: 600;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .panel-left .panel-label { color: #a855f7; }
+    .panel-right .panel-label { color: #38bdf8; }
+
+    .panel-label::before {
+      content: '';
+      display: inline-block;
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      animation: pulse 1.8s infinite;
+    }
+
+    .panel-left .panel-label::before { background: #a855f7; box-shadow: 0 0 8px #a855f7; }
+    .panel-right .panel-label::before { background: #38bdf8; box-shadow: 0 0 8px #38bdf8; }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.4; transform: scale(0.8); }
+    }
+
+    textarea {
+      flex: 1;
+      background: #13131f;
+      border: 1px solid #2a1a4a;
+      border-radius: 12px;
+      color: #e0e0e0;
+      font-family: 'Inter', sans-serif;
+      font-size: 0.95rem;
+      line-height: 1.6;
+      padding: 16px;
+      resize: none;
+      outline: none;
+      transition: border-color 0.3s, box-shadow 0.3s;
+    }
+
+    textarea:focus {
+      border-color: #a855f7;
+      box-shadow: 0 0 0 3px rgba(168, 85, 247, 0.15);
+    }
+
+    textarea::placeholder { color: #3d3d5c; }
+
+    button {
+      padding: 13px;
+      border: none;
+      border-radius: 12px;
+      font-family: 'Orbitron', sans-serif;
+      font-size: 0.85rem;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      cursor: pointer;
+      background: linear-gradient(135deg, #7c3aed, #2563eb);
+      color: #fff;
+      transition: opacity 0.2s, transform 0.1s, box-shadow 0.3s;
+      box-shadow: 0 4px 20px rgba(124, 58, 237, 0.4);
+    }
+
+    button:hover:not(:disabled) {
+      opacity: 0.9;
+      transform: translateY(-1px);
+      box-shadow: 0 6px 28px rgba(124, 58, 237, 0.6);
+    }
+
+    button:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    /* ── RESPONSE AREA ── */
+    .response-box {
+      flex: 1;
+      background: #13131f;
+      border: 1px solid #1a2a3a;
+      border-radius: 12px;
+      padding: 16px;
+      overflow-y: auto;
+      font-size: 0.95rem;
+      line-height: 1.7;
+      color: #cbd5e1;
+      white-space: pre-wrap;
+      word-break: break-word;
+      scrollbar-width: thin;
+      scrollbar-color: #2a2a4a transparent;
+    }
+
+    .response-box::-webkit-scrollbar { width: 6px; }
+    .response-box::-webkit-scrollbar-thumb { background: #2a2a4a; border-radius: 4px; }
+
+    .placeholder-text {
+      color: #2a2a4a;
+      font-style: italic;
+      font-size: 0.9rem;
+    }
+
+    /* ── LOADER ── */
+    .loader {
+      display: none;
+      align-items: center;
+      gap: 10px;
+      color: #38bdf8;
+      font-size: 0.82rem;
+      letter-spacing: 0.05em;
+    }
+
+    .loader.active { display: flex; }
+
+    .dots span {
+      display: inline-block;
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: #38bdf8;
+      animation: bounce 1.2s infinite ease-in-out;
+    }
+
+    .dots span:nth-child(2) { animation-delay: 0.2s; }
+    .dots span:nth-child(3) { animation-delay: 0.4s; }
+
+    @keyframes bounce {
+      0%, 80%, 100% { transform: scale(0.6); opacity: 0.4; }
+      40% { transform: scale(1); opacity: 1; }
+    }
+
+    .error-text { color: #f87171; font-size: 0.88rem; }
+
+    /* ── DIVIDER ── */
+    .divider {
+      width: 4px;
+      background: linear-gradient(180deg, #7c3aed, #2563eb, #7c3aed);
+      background-size: 100% 200%;
+      animation: flowDown 3s infinite linear;
+      flex-shrink: 0;
+    }
+
+    @keyframes flowDown {
+      0% { background-position: 0% 0%; }
+      100% { background-position: 0% 200%; }
+    }
+
+    /* ── RESPONSIVE ── */
+    @media (max-width: 700px) {
+      .container { flex-direction: column; }
+      .divider { width: 100%; height: 4px; }
+      .panel-left { border-right: none; border-bottom: 1px solid #1e1e3a; }
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <h1>⚡ Amazon Nova Lite</h1>
+    <p>Powered by Amazon Bedrock · AWS Generative AI</p>
+  </header>
+
+  <div class="container">
+
+    <!-- LEFT: Prompt -->
+    <div class="panel panel-left">
+      <div class="panel-label">Your Prompt</div>
+      <textarea id="prompt" placeholder="Ask Nova Lite anything...&#10;&#10;e.g. Explain quantum computing in simple terms."></textarea>
+      <button id="submitBtn" onclick="sendPrompt()">INVOKE NOVA LITE →</button>
+    </div>
+
+    <div class="divider"></div>
+
+    <!-- RIGHT: Response -->
+    <div class="panel panel-right">
+      <div class="panel-label">AI Response</div>
+      <div class="loader" id="loader">
+        <div class="dots"><span></span><span></span><span></span></div>
+        Generating response...
+      </div>
+      <div class="response-box" id="responseBox">
+        <span class="placeholder-text">Your AI response will appear here...</span>
+      </div>
+    </div>
+
+  </div>
+
+  <script>
+    async function sendPrompt() {
+      const prompt = document.getElementById("prompt").value.trim();
+      const responseBox = document.getElementById("responseBox");
+      const loader = document.getElementById("loader");
+      const btn = document.getElementById("submitBtn");
+
+      if (!prompt) {
+        responseBox.innerHTML = '<span class="error-text">⚠ Please enter a prompt before submitting.</span>';
+        return;
+      }
+
+      btn.disabled = true;
+      responseBox.style.display = "none";
+      loader.classList.add("active");
+
+      try {
+        const res = await fetch("/invoke", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ prompt })
+        });
+
+        const data = await res.json();
+        loader.classList.remove("active");
+        responseBox.style.display = "block";
+
+        if (data.error) {
+          responseBox.innerHTML = `<span class="error-text">⚠ ${data.error}</span>`;
+        } else {
+          responseBox.textContent = data.response;
+        }
+      } catch (err) {
+        loader.classList.remove("active");
+        responseBox.style.display = "block";
+        responseBox.innerHTML = '<span class="error-text">⚠ Failed to connect to the server.</span>';
+      } finally {
+        btn.disabled = false;
+      }
+    }
+
+    // Submit on Ctrl+Enter
+    document.getElementById("prompt").addEventListener("keydown", (e) => {
+      if (e.ctrlKey && e.key === "Enter") sendPrompt();
+    });
+  </script>
+
+</body>
+</html>
