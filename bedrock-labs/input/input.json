@@ -1,0 +1,16 @@
+{
+  "messages": [
+    {
+      "role": "user",
+      "content": [
+        {
+          "text": "Summarize this invoice in simple language. Mention vendor, total amount, due date, and important details.  Please compare the itemized cost amount with the subtotal, so that there is no missmatch in the individual item cost and the subtotal \n\nPASTE_INVOICE_TEXT_HERE"
+        }
+      ]
+    }
+  ],
+  "inferenceConfig": {
+    "max_new_tokens": 300,
+    "temperature": 0.3
+  }
+}

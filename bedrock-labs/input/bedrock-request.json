@@ -1,0 +1,16 @@
+{
+  "messages": [
+    {
+      "role": "user",
+      "content": [
+        {
+          "text": "\nSummarize this invoice in simple language.\n\nPlease provide:\n- Vendor name\n- Invoice number\n- Invoice date\n- Total amount\n- Important details\n\nAlso compare the individual item totals with the subtotal and verify whether they match correctly (have a look around Unit price & the chartged amount, if there is a diffrenct between unit price with qunatity and the amount, then highlight it.).\n\nInvoice Text:\nAcme Corp\nInvoice 1001\nTotal .00\n"
+        }
+      ]
+    }
+  ],
+  "inferenceConfig": {
+    "max_new_tokens": 500,
+    "temperature": 0.9
+  }
+}
